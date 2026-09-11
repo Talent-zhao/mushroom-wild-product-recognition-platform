@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+{% block title %}
+    基于web的商品门票预定系统
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/nav.css">
+        <link rel="stylesheet" href="/static/css/ax.css">
+    <link rel="stylesheet" href="/static/css/ax-response.css">
+    <style>
+        a:hover {
+            color: red;
+        !important;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1 style="margin: 20px auto;color: red;text-align: center;font-size: 20px">我的收藏</h1>
+    <div class="ax-padding" style="background-color:white;width: 1400px;margin: 10px auto">
+        <div class="ax-grid ax-space-xxl">
+            <ul class="ax-grid-inner">
+                {% for foo in newlist %}
+                    <li class="ax-grid-block ax-col-12">
+                        <div class="ax-card-block">
+                            <div class="ax-img">
+                                <a href="###" class="ax-figure"
+                                   style="background-image:url(/IMG/{{ foo.img }});"></a>
+                            </div>
+                            <div class="ax-title">
+                                <a href="/detail/?id={{ foo.id }}" class="ax-ell-title">{{ foo.title }}</a>
+                            </div>
+                            <div class="ax-des">
+                                {{ foo.content |safe }}
+                            </div>
+                            <div class="ax-from">
+                                发布者：<span style="margin-left: 50px;color: #1E9FFF">{{ foo.username }}</span>
+                                发布时间<span style="margin-left: 50px;color: red">{{ foo.date }}</span>
+                                类别：<span style="margin-left: 50px;color: #e43ff6">{{ foo.typename }}</span>
+                                {% if is_like == 1 %}
+                                    <span style="margin-left: 50px"><i id_="{{ foo.id }}"
+                                                                       class="shoucang layui-icon layui-icon-heart-fill"
+                                                                       style="color: red"></i></span>
+                                {% else %}
+                                    <span style="margin-left: 50px"><i id_="{{ foo.id }}"
+                                                                       class="shoucang layui-icon layui-icon-heart-fill"
+                                                                       style="color: black"></i></span>
+                                {% endif %}
+                            </div>
+                    </li>
+                {% endfor %}
+
+
+            </ul>
+        </div>
+    </div>
+{#    <div class="newlist" style="background-color:white;width: 800px;margin: 10px auto">#}
+{#        {% for foo in newlist %}#}
+{#            <div style="height: 150px;width: 800px;vertical-align:middle;">#}
+{#                <img style="width:150px;height: 150px;display: inline-block;vertical-align:middle;"#}
+{#                     src="/IMG/{{ foo.img }}" alt="">#}
+{#                <div class="info"#}
+{#                     style="width: 640px;height: 140px;display: inline-block;vertical-align:middle;position: relative">#}
+{#                    <p style="margin:10px 20px;height: 20px;line-height: 20px"><a href="/detail/?id={{ foo.id }}">{{ foo.title }}</a></p>#}
+{#                    <div style="position: absolute;bottom: 10px">#}
+{#                        <span style="margin-left: 50px">{{ foo.username }}</span>#}
+{#                        <span style="margin-left: 50px">{{ foo.date }}</span>#}
+{#                        <span style="margin-left: 50px">{{ foo.typename }}</span>#}
+{#                        {% ifequal is_like 1 %}#}
+{#                            <span style="margin-left: 50px"><i id_="{{ foo.id }}"#}
+{#                                                               class="shoucang layui-icon layui-icon-heart-fill"#}
+{#                                                               style="color: red"></i></span>#}
+{#                        {% else %}#}
+{#                            <span style="margin-left: 50px"><i id_="{{ foo.id }}"#}
+{#                                                               class="shoucang layui-icon layui-icon-heart-fill"#}
+{#                                                               style="color: black"></i></span>#}
+{#                        {% endifequal %}#}
+{##}
+{##}
+{#                    </div>#}
+{##}
+{##}
+{#                </div>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{##}
+{##}
+{#    </div>#}
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/current.js"></script>
+    <script src="/static/layui/lay/modules/layer.js"></script>
+    <script>
+        $('.shoucang').click(function () {
+            var id = $(this).attr('id_')
+            var  ths = $(this)
+            $.ajax({
+                url: '/star_ajax/',
+                dataType: 'json',
+                method: 'post',
+                data: {
+                    'id': id
+                },
+                success: function (data) {
+                    if (data.color == 'red') {
+                        $(ths).css('color', data.color)
+                        layer.msg('收藏成功', {icon: 8, time: 2000});
+                    } else {
+                        $(ths).css('color', data.color)
+                        layer.msg('取消收藏', {icon: 5, time: 2000});
+                    }
+
+                }
+            });
+        })
+    </script>
+
+{% endblock %}

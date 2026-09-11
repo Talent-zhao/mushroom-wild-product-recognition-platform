@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% block title %}  {{ block.super }}   {% endblock %}
+
+{% block css %}
+    <style>
+        .table tr th {
+            text-align: center;
+        }
+        #preimg {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            max-width: 100%;
+            height: auto;
+        }
+        #predictlabel {
+            display: block;
+            padding: 10px 15px;
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        .goods-form-wrapper {
+            margin: 0 auto;
+        }
+        .goods-form-wrapper .layui-row {
+            align-items: flex-start;
+        }
+        .goods-form-wrapper .layui-col-md9 {
+            padding-right: 16px;
+            box-sizing: border-box;
+        }
+        .goods-form-wrapper .layui-col-md3 {
+            text-align: center;
+        }
+        .goods-form-wrapper #preimg {
+            width: 100%;
+            max-width: 260px;
+        }
+        .goods-form-wrapper .layui-form-item {
+            margin-bottom: 18px;
+        }
+        .goods-form-wrapper .layui-form-item:last-child {
+            margin-bottom: 0;
+        }
+        .goods-form-wrapper select[name="cls"] {
+            width: 100%;
+            height: 38px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0 12px;
+            font-size: 14px;
+        }
+        .goods-form-wrapper .layui-form-item .layui-input-inline {
+            width: auto;
+        }
+        .goods-form-wrapper .layui-form-item .layui-input-inline input[type="file"] {
+            padding: 6px 10px;
+        }
+        @media (max-width: 992px) {
+            .goods-form-wrapper .layui-row {
+                display: block;
+            }
+            .goods-form-wrapper .layui-col-md9,
+            .goods-form-wrapper .layui-col-md3 {
+                width: 100%;
+                max-width: 100%;
+            }
+            .goods-form-wrapper .layui-col-md3 {
+                margin-top: 16px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <!-- 内容 -->
+    <div class="layui-container goods-form-wrapper" style="margin-top: 10px; max-width: 1200px; margin-left: auto; margin-right: auto;">
+
+        <div class="layui-card">
+            <div class="layui-card-header">发布商品</div>
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <div class="layui-col-md9">
+                        <div style="margin: 10px auto">
+                            <form class="layui-form layui-form-pane" enctype="multipart/form-data" method="post">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">商品标题</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="title" placeholder="输入标题" class="layui-input"
+                                               value="标题"
+                                               lay-verify="required">
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">商品类别</label>
+                                    <div class="layui-input-block">
+
+                                        <select class="" name="cls">
+                                            {% for foo in cls_list %}
+                                                <option {% if foo.id == cls %} selected {% endif %}
+                                                                                 value="{{ foo.id }}">{{ foo.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <span id="predictlabel" style="color: red"></span>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">图片</label>
+                                    <div class="layui-input-inline">
+                                        <input type="file" class="layui-input" name="img" id="img"
+                                               accept=".jpg, .png, .jpeg" lay-verify="required">
+
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">价格</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="price" placeholder="输入价格" class="layui-input"
+                                               value="100"
+                                               lay-verify="required">
+                                    </div>
+                                </div>
+                                <!-- 加载编辑器的容器 -->
+                                <script style="height: 500px" id="container" name="content" type="text/plain">
+                                    初始化内容
+                                </script>
+                                <!-- 配置文件 -->
+                                <script type="text/javascript" src="/static/lib/ueditor/ueditor.config.js"></script>
+                                <!-- 编辑器源码文件 -->
+                                <script type="text/javascript" src="/static/lib/ueditor/ueditor.all.js"></script>
+
+                                <div class="layui-form-item" style="">
+                                    <button class="layui-btn" lay-submit lay-filter="submit">确认</button>
+                                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="layui-col-md3">
+                        <img id="preimg" src="" alt="">
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/alert.js"></script>
+
+    <script>
+        var ue = UE.getEditor('container', {
+            // 宽度适当缩小，避免与右侧预览区重叠
+            'initialFrameWidth': 900,
+            'initialFrameHeight': 500,
+            'serverUrl': "/ueditor/controller/?imagePathFormat=images/&filePathFormat=files/"
+        });
+        layui.use(['form','element'],function () {
+            // 常用
+            var element = layui.element;
+            var layer = layui.layer;//
+            var $ = layui.jquery; //
+            var form = layui.form;//
+            var table = layui.table;//
+            var util = layui.util;// 工具
+            var laypage = layui.laypage;
+
+
+
+            form.on('submit(submit)', function (data) {
+                layer.msg(JSON.stringify(data.field));
+                var html = ue.getContent();
+                var data = data.field;
+                data['content'] = html;
+                var img = $('#img')[0].files[0];
+
+                // 构建要发送的数据对象
+                var formData = new FormData();
+                formData.append('data', JSON.stringify(data));
+                formData.append('img', img);
+
+
+                $.ajax({
+                    url: '{% url "goods_add" %}',
+                    dataType: 'json',
+                    method: 'post',
+                    contentType: false,
+                    processData: false,
+                    //JSON.stringify(data.field)
+                    //data: new FormData(  document.getElementById('submitNote') ),
+                    data: formData,
+                    success: function (data) {
+                        layer.msg(data.msg, {time: 3000, icon: 1});
+                        location.href = "{% url 'index'  %}?id=" + data.id
+                    },
+                });
+                return false;
+            });
+
+        });
+    </script>
+    <script>
+        $('#img').on('change', function (event) {
+            var fileInput = document.getElementById('img');
+
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                console.log(event.target.result)
+                $('#preimg').attr('src', event.target.result) // 设置图片的 src 为读取到的文件内容
+
+            };
+            reader.readAsDataURL(file);  // 读取文件为 Data URL
+            showLoading({
+                title: "文件上传中...",
+                mask: true,
+                success: function (res) {
+                    {#console.warn(JSON.stringify(res))#}
+                }
+            });
+            if (file) {
+                // 获取文件扩展名
+                // var validExtensions = ['.jpg', '.jpeg', '.png', '.pdf', '.docx'];
+                var validExtensions = ['.jpg', '.jpeg', '.png', '.pdf', '.docx'];
+                var fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+                if (validExtensions.indexOf(fileExtension) === -1) {
+                    // 文件格式不符合要求
+                    alert("文件上传不符合格式")
+                    fileError.style.display = 'block';
+                    hideLoading()
+                    return false;
+                } else {
+
+                    var formData = new FormData();
+                    // formData.append('file', $('#file')[0].files[0]); //添加图片信息的参数
+                    formData.append('file', file); //添加图片信息的参数
+                    // formData.append('name',$('input[name="name"]').val()); //添加其他参数
+                    $.ajax({
+                        url: '{% url 'upload2' %}',
+                        dataType: 'json',
+                        method: 'post',
+                        data: formData,
+                        cache: false, //上传文件不需要缓存
+                        processData: false, // 告诉jQuery不要去处理发送的数据
+                        contentType: false, // 告诉jQuery不要去设置Content-Type请求头
+                        success: function (data) {
+                            hideLoading()
+                            alert("您预测的山货类别：" + data.label)
+                            $('input[name="title"]').val(data.label)
+                            $('select[name="cls"]').val(data.label)
+                            $('#predictlabel').text("该商品预测类别：" + data.label)
+                            if (data.label == "不可食用山货") {
+                                alert('该商品不可以食用，不可以发布！！！！！！！！！！！！！！！！！！！！')
+                            }
+                            return false;
+                        }
+                    })
+                    return false;
+                }
+            }
+            return false;
+
+
+        })
+    </script>
+
+{% endblock %}

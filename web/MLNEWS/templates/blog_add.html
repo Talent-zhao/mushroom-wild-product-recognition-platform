@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}  {{ block.super }}   {% endblock %}
+
+{% block css %}
+    <style>
+        .table tr th {
+            text-align: center;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <!-- 内容 -->
+    <div class="layui-container" style="margin-top: 10px;width: 1200px;margin: 10px auto;">
+        <div class="layui-card" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+            <div class="layui-card-header" style="background-color:{{ global_bg_color }};color: white">发布博客</div>
+            <div class="layui-card-body">
+                <div class="layui-row">
+                    <div class="layui-col-md12">
+                        <div style="margin: 10px auto">
+                            <form class="layui-form layui-form-pane" enctype="multipart/form-data" method="post">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">博客标题</label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="title" placeholder="输入标题" class="layui-input"
+                                               value="标题"
+                                               lay-verify="required">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item" style="margin-bottom: 100px">
+                                    <label class="layui-form-label">博客类别</label>
+                                    <div class="layui-input-inline">
+                                        <select class="layui-input" name="cls" id="" lay-search lay-verify="required">
+
+                                            {% for foo in cls_list %}
+                                                <option {% if foo == cls %} selected {% endif %}
+                                                                              value="{{ foo.id }}">{{ foo.name }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">图片</label>
+                                    <div class="layui-input-inline">
+                                        <input type="file" class="layui-input" name="img" id="img"
+                                               accept=".jpg, .png, .jpeg" lay-verify="required">
+
+                                    </div>
+                                </div>
+
+                                <!-- 加载编辑器的容器 -->
+                                <script style="height: 500px" id="container" name="content" type="text/plain">
+                                    初始化内容
+                                </script>
+                                <!-- 配置文件 -->
+                                <script type="text/javascript" src="/static/lib/ueditor/ueditor.config.js"></script>
+                                <!-- 编辑器源码文件 -->
+                                <script type="text/javascript" src="/static/lib/ueditor/ueditor.all.js"></script>
+
+                                <div class="layui-form-item" style="">
+                                    <button class="layui-btn" lay-submit lay-filter="submit">确认</button>
+                                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/alert.js"></script>
+
+    <script>
+        var ue = UE.getEditor('container', {
+            'initialFrameWidth': 1200,
+            'initialFrameHeight': 600,
+            'serverUrl': "/ueditor/controller/?imagePathFormat=images/&filePathFormat=files/"
+        });
+         layui.use(['form','element'],function () {
+            // 常用
+            var element = layui.element;
+            var layer = layui.layer;//
+            var $ = layui.jquery; //
+            var form = layui.form;//
+            var table = layui.table;//
+            var util = layui.util;// 工具
+            var laypage = layui.laypage;
+
+            form.on('submit(submit)', function (data) {
+                layer.msg(JSON.stringify(data.field));
+                var html = ue.getContent();
+                var data = data.field;
+                data['content'] = html;
+                var img = $('#img')[0].files[0];
+
+                // 构建要发送的数据对象
+                var formData = new FormData();
+                formData.append('data', JSON.stringify(data));
+                formData.append('img', img);
+
+
+                $.ajax({
+                    url: '{% url "blog_add" %}',
+                    dataType: 'json',
+                    method: 'post',
+                    contentType: false,
+                    processData: false,
+                    //JSON.stringify(data.field)
+                    //data: new FormData(  document.getElementById('submitNote') ),
+                    data: formData,
+                    success: function (data) {
+                        layer.msg(data.msg, {time: 3000, icon: 1});
+                        location.href = "{% url 'blog_detail'  %}?id=" + data.id
+                    },
+                });
+                return false;
+            });
+
+        });
+    </script>
+{% endblock %}

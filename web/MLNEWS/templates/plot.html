@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+{% block title %}
+
+{% endblock %}
+
+{% block css %}
+    <style>
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div style="width: 1200px;margin: 10px auto">
+        <div id="container2" style="min-width:400px;height:400px"></div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+    <script src="https://cdn.highcharts.com.cn/highcharts/modules/exporting.js"></script>
+    <script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
+    <script>
+        var chart = Highcharts.chart('container1', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: '类别商品个数排行柱状图'
+            },
+            subtitle: {
+                text: '数据截止今日'
+            },
+            xAxis: {
+                type: 'category',
+                labels: {
+                    rotation: -45  // 设置轴标签旋转角度
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: '商品个数'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                pointFormat: '商品个数: <b>{point.y:.1f} </b>'
+            },
+            series: [{
+                name: '总人口',
+                data: {{ data1 |safe }},
+                dataLabels: {
+                    enabled: true,
+                    rotation: -90,
+                    color: '#FFFFFF',
+                    align: 'right',
+                    format: '{point.y:.1f}', // :.1f 为保留 1 位小数
+                    y: 10
+                }
+            }]
+        });
+    </script>
+
+    <script>
+        var chart = Highcharts.chart('container2', {
+            title: {
+                text: '类别商品个数排行柱状图'
+            },
+            subtitle: {
+                text: ''
+            },
+            yAxis: {
+                title: {
+                    text: '就业人数'
+                }
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+             xAxis: {
+        categories: {{ province_list |safe }},
+    },
+
+            series: {{ data2 |safe }},
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        }
+                    }
+                }]
+            }
+        });
+    </script>
+{% endblock %}

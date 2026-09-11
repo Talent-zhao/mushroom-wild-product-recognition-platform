@@ -1,0 +1,128 @@
+{% extends "layout.html" %}
+{% block title %}
+    搜索
+{% endblock %}
+
+{% block css %}
+
+   <link rel="stylesheet" href="/static/css/ax.css">
+    <link rel="stylesheet" href="/static/css/ax-response.css">
+    <style>
+        a:hover {
+            color: red;
+        !important;
+        }
+
+
+        .haha:hover {
+            background-color: lightblue;
+        }
+        .kind{
+            margin: 5px auto;
+        }
+        .yuyue{
+            cursor: pointer;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <form class="layui-form layui-form-pane" action="{% url 'search' %}" style="width: 800px;margin: 10px auto;text-align: center" method="get">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">关键词</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="key" autocomplete="off" class="layui-input" value="{{ key }}">
+                </div>
+            </div>
+             <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <button class="layui-btn">搜索</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+<div class="ax-padding" style="background-color:white;width: 1400px;margin: 10px auto">
+        <div class="ax-grid ax-space-xxl">
+            <ul class="ax-grid-inner">
+                {% for foo in newlist %}
+                    <li class="ax-grid-block ax-col-11">
+                        <div class="ax-card-block">
+                            <div class="ax-img" style="height: 400px">
+                                <a href="###" class="ax-figure"
+                                   style="background-image:url(/IMG/{{ foo.img }});"></a>
+                            </div>
+                            <div class="ax-title">
+                                <a href="/detail/?id={{ foo.id }}" class="ax-ell-title">{{ foo.title }}</a>
+                            </div>
+                            <div class="ax-des" style="height: 50px;text-overflow-ellipsis: ellipsis">
+                                {{ foo.content |safe }}
+                            </div>
+                            <div class="ax-from">
+                                发布时间：<span style="color: red">{{ foo.date }}</span>
+                                类别：<span style="color: #e43ff6">{{ foo.typename }}</span>
+                                价格：<span style="color: #e43ff6;font-size: 20px;font-weight: bolder">￥{{ foo.price }}</span>
+                                {% if is_like == 1 %}
+                                    <span style="margin-left: 50px"><i id_="{{ foo.id }}"
+                                                                       class="shoucang layui-icon layui-icon-heart-fill"
+                                                                       style="color: red"></i></span>
+                                {% else %}
+                                    <span style="margin-left: 50px"><i id_="{{ foo.id }}"
+                                                                       class="shoucang layui-icon layui-icon-heart-fill"
+                                                                       style="color: black"></i></span>
+                                {% endif %}
+                                <div pk="{{ foo.id }}" style="width: 60px;text-align: center" class="yuyue ax-bg-primary ax-gradient ax-rotate">预约</div>
+
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/current.js"></script>
+    <script src="/static/layui/lay/modules/layer.js"></script>
+    <script>
+        $(function () {
+            new SelectTag({
+                child: ".default", //所有默认
+                over: 'on', //当前选中
+                all: ".all" // 默认全部
+            });
+        })
+        $('.shoucang').click(function () {
+            var id = $(this).attr('id_')
+            var ths = $(this)
+            $.ajax({
+                url: '/star_ajax/',
+                dataType: 'json',
+                method: 'post',
+                data: {
+                    'id': id
+                },
+                success: function (data) {
+                    if (data.color == 'red') {
+                        $(ths).css('color', data.color)
+                        layer.msg('收藏成功', {icon: 8, time: 2000});
+                    } else {
+                        $(ths).css('color', data.color)
+                        layer.msg('取消收藏', {icon: 5, time: 2000});
+                    }
+
+                }
+            });
+        })
+
+        $('.yuyue').click(function (){
+            var id = $(this).attr('pk')
+            var tempwindow=window.open('_blank');
+            tempwindow.location='{% url "yuyue" %}' + '?id=' + id;
+        })
+
+    </script>
+{% endblock %}

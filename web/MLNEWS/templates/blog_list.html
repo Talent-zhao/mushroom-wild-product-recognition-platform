@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ global_title }}
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/nav.css">
+    <link rel="stylesheet" href="/static/css/ax.css">
+    <link rel="stylesheet" href="/static/css/ax-response.css">
+    <style>
+        .ax-card-block .ax-from {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            margin-top: 8px;
+        }
+        .ax-card-block .ax-from .ax-from-meta {
+            white-space: nowrap;
+            font-size: 13px;
+            color: #718096;
+        }
+        .ax-card-block .ax-from .ax-from-meta .val { color: #2d3748; }
+        .ax-card-block .ax-from .ax-from-meta.val-category .val { color: #4299e1; }
+        .ax-card-block .blog-read-more {
+            margin-left: auto;
+            font-size: 14px;
+            color: #4299e1;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .ax-card-block .blog-read-more:hover {
+            text-decoration: underline;
+            color: #3182ce;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="ax-padding" style="background-color:white;max-width: 1400px;margin: 20px auto; box-sizing: border-box;">
+        <div class="category-filter">
+            <span class="category-filter-label">博客类别</span>
+            <div class="category-dropdown">
+                <select class="category-select" id="blogCategorySelect" onchange="changeBlogCategory(this.value)">
+                    {% for foo in kind_list %}
+                        <option value="{{ foo.id }}" {% if kind and foo.id == kind %}selected{% endif %}>
+                            {{ foo.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="ax-padding" style="background-color:white;max-width: 1400px;margin: 10px auto; box-sizing: border-box;">
+        <div class="ax-grid ax-space-xxl">
+            <ul class="ax-grid-inner">
+                {% for foo in newlist %}
+                    <li class="ax-grid-block ax-col-11"  style="">
+                        <div class="ax-card-block">
+                            <div class="ax-img" style="height: 400px">
+                                <a href="{% url 'blog_detail' %}?id={{ foo.id }}" class="ax-figure"
+                                   style="background-image:url(/IMG/{{ foo.img }});" title="点击查看详情"></a>
+                            </div>
+                            <div class="ax-title">
+                                <a href="{% url 'blog_detail' %}?id={{ foo.id }}" class="ax-ell-title">{{ foo.title }}</a>
+                            </div>
+                            <div class="ax-des" style="height: 50px;text-overflow-ellipsis: ellipsis">
+                                {{ foo.content |safe }}
+                            </div>
+                            <div class="ax-from">
+                                <span class="ax-from-meta">发布时间：<span class="val">{{ foo.date }}</span></span>
+                                <span class="ax-from-meta val-category">类别：<span class="val">{{ foo.kind }}</span></span>
+                                <a href="{% url 'blog_detail' %}?id={{ foo.id }}" class="blog-read-more">阅读全文</a>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        function changeBlogCategory(categoryId) {
+            if (categoryId) {
+                window.location.href = '/blog_list?kind=' + categoryId;
+            }
+        }
+    </script>
+{% endblock %}

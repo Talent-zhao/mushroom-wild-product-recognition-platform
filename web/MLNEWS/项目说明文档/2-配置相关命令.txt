@@ -1,0 +1,30 @@
+pip install  -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+
+Python manage.py init
+python manage.py runserver
+
+
+
+python -m IPython notebook
+
+conda create -n py37  python=3.7
+conda activate py37
+conda deactivate
+
+
+scrapy list
+scrapy crawl book_list
+query = query.encode()
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}
+
+{% endblock %}
+
+{% block css %}
+    <style>
+    .tuipiao{
+        cursor: pointer;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="newlist" style="background-color:white;max-width: 1200px;margin: 10px auto; padding: 20px;">
+        {% if not order_list %}
+            <p style="text-align: center; color: #999; padding: 40px 0;">暂无订单</p>
+        {% else %}
+        {% for foo in order_list %}
+            <div class="haha" style="height: 150px;width: 900px;vertical-align:middle;
+            border: 1px solid black;border-radius: 10px;margin-bottom: 10px;margin: 10px auto">
+                <img style="width:150px;height: 130px;display: inline-block;vertical-align:middle;"
+                     src="/IMG/{{ foo.goods.img }}" alt="">
+                <div class="info"
+                     style="width: 640px;height: 140px;display: inline-block;vertical-align:middle;position: relative">
+                    <p style="margin:10px 20px;height: 20px;line-height: 20px"><a style="color: #00a8ff"
+                                                                                  href="/detail/?id={{ foo.goods.id }}">{{ foo.goods.title }}</a>
+                    </p>
+                    <p style="margin:10px 20px;height: 20px;line-height: 20px">下单时间：{{ foo.today }}</p>
+                    <p style="margin:10px 20px;height: 20px;line-height: 20px">订单号：{{ foo.uuid }}</p>
+                    <div style="position: absolute;bottom: 0px">
+                        <span style="margin-left: 25px;color: #e84118">单价：{{ foo.goods.price }}元</span>
+                        <span style="margin-left: 25px;color: #e84118">数量：{{ foo.num }}</span>
+                        <span style="margin-left: 25px;color: #e84118">总价：{{ foo.total }}元</span>
+
+                    </div>
+
+
+                </div>
+            </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+<!--  title -->
+{% block title %}  {{ block.super }}   {% endblock %}
+<!--  css -->
+{% block css %}
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: none;
+            overflow: hidden;
+        }
+        .card-header {
+            background: #ffffff !important;
+            color: #2d3748 !important;
+            padding: 16px 24px;
+            font-weight: 500;
+            font-size: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .card-body {
+            padding: 30px;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .form-control {
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 12px;
+            transition: all 0.2s ease;
+        }
+        .form-control:focus {
+            border-color: #48bb78;
+            box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+            outline: none;
+        }
+        .btn-primary {
+            background: #48bb78;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 24px;
+            font-weight: 400;
+            transition: all 0.2s ease;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #38a169;
+        }
+        #preimg {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            object-fit: cover;
+            border: 4px solid white;
+            max-width: 100%;
+            height: auto;
+        }
+        .row {
+            align-items: center;
+        }
+    </style>
+{% endblock %}
+<!--  内容 -->
+{% block content %}
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                上传图片识别山货类别
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div style="background: #f7fafc; padding: 24px; border-radius: 8px; border: 1px dashed #cbd5e0;">
+                            <form id="uploadForm" method="post" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="fileInput" class="form-label">选择图片文件</label>
+                                    <input type="file" class="form-control" id="fileInput" name="file"
+                                           accept=".jpg, .jpeg, .png" required>
+                                    <small class="text-muted" style="display: block; margin-top: 8px; font-size: 13px; color: #718096;">
+                                        支持格式：JPG、JPEG、PNG
+                                    </small>
+                                    <div id="fileError" class="text-danger mt-2" style="display: none; font-size: 13px;">
+                                        文件格式不正确，请选择 JPG、JPEG 或 PNG 格式的图片
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary upload">
+                                    开始识别
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <div style="margin-bottom: 12px; font-weight: 400; color: #718096; font-size: 14px;">图片预览</div>
+                        <img id="preimg" src="" alt="预览图片" style="width: 100%; max-width: 400px; height: auto; border-radius: 8px; border: 1px solid #e2e8f0; display: none;">
+                        <div id="noImage" style="padding: 60px; color: #cbd5e0; font-size: 36px;">
+                            📷
+                        </div>
+                        <div id="resultArea" style="margin-top: 20px; padding: 16px; background: #f0fff4; border-radius: 8px; border: 1px solid #9ae6b4; display: none;">
+                            <div style="font-weight: 600; color: #276749; margin-bottom: 8px;">识别结果</div>
+                            <div id="resultLabel" style="font-size: 18px; color: #22543d;"></div>
+                            <a href="{% url 'predictHistory' %}" id="resultLink" class="btn btn-primary" style="margin-top: 12px; display: inline-block;">查看识别记录</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+<!--  js -->
+{% block js %}
+
+    <script>
+        // 爬
+        $(".upload").click(function () {
+            var fileInput = document.getElementById('fileInput');
+            var fileError = document.getElementById('fileError');
+            var file = fileInput.files[0];
+
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                console.log(event.target.result)
+                $('#preimg').attr('src', event.target.result).show() // 设置图片的 src 为读取到的文件内容
+                $('#noImage').hide() // 隐藏占位符
+            };
+            reader.readAsDataURL(file);  // 读取文件为 Data URL
+
+            if (file) {
+                // 获取文件扩展名
+                // var validExtensions = ['.jpg', '.jpeg', '.png', '.pdf', '.docx'];
+                var validExtensions = ['.jpg', '.jpeg', '.png', '.pdf', '.docx'];
+                var fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+                if (validExtensions.indexOf(fileExtension) === -1) {
+                    // 文件格式不符合要求
+                    alert("文件上传不符合格式")
+                    fileError.style.display = 'block';
+                    hideLoading()
+                    return false;
+                } else {
+                    // 文件格式符合要求，隐藏错误信息
+                    fileError.style.display = 'none';
+                    var formData = new FormData();
+                    // formData.append('file', $('#file')[0].files[0]); //添加图片信息的参数
+                    formData.append('file', file); //添加图片信息的参数
+                    // formData.append('name',$('input[name="name"]').val()); //添加其他参数
+                    $.ajax({
+                        url: '{% url 'upload2' %}',
+                        dataType: 'json',
+                        method: 'post',
+                        data: formData,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            var raw = (data && data.label !== undefined && data.label !== null) ? data.label : '';
+                            var label = (typeof raw === 'string' && raw.trim()) ? raw : ((data && data.msg) || '未知');
+                            $('#resultLabel').text(label);
+                            $('#resultArea').show();
+                            alert('预测类别：' + label + '，已写入识别记录');
+                            return false;
+                        },
+                        error: function (xhr) {
+                            var msg = '识别请求失败';
+                            try {
+                                var res = xhr.responseJSON;
+                                if (res && res.msg) msg = res.msg;
+                            } catch (e) {}
+                            if (xhr.status === 401) {
+                                alert(msg || '请先登录后再进行识别');
+                                window.location.href = '{% url "login" %}';
+                                return;
+                            }
+                            if (xhr.status) msg += '（' + xhr.status + '）';
+                            alert(msg);
+                        }
+                    })
+                    return false;
+                }
+            }
+            return false;
+        })
+    </script>
+
+{% endblock %}

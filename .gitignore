@@ -1,0 +1,76 @@
+# Python
+__pycache__/
+*.py[cod]
+.Python
+venv/
+.venv/
+env/
+.pytest_cache/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.npm/
+.pnpm-store/
+
+# Java / Maven / Gradle
+target/
+.gradle/
+*.class
+*.jar
+*.war
+
+# IDE / OS
+.idea/
+.vscode/
+.vs/
+.DS_Store
+Thumbs.db
+
+# Runtime data
+logs/
+log/
+*.log
+tmp/
+temp/
+cache/
+uploads/
+upload/
+media/
+
+# Databases and datasets
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.csv
+*.tsv
+*.xls
+*.xlsx
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+cookies.txt
+
+# Models and large artifacts
+*.pt
+*.pth
+*.pkl
+*.pickle
+*.h5
+*.safetensors
+*.onnx
+*.ckpt
+*.bin
+
+# Archives and installers
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.exe

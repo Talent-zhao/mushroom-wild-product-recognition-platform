@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}
+    {{ global_title }}
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="/static/css/nav.css">
+    <link rel="stylesheet" href="/static/css/ax.css">
+    <link rel="stylesheet" href="/static/css/ax-response.css">
+    <style>
+        .yuyue {
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="ax-padding" style="background-color:white;max-width: 1400px;margin: 20px auto; box-sizing: border-box;">
+        <div class="category-filter">
+            <span class="category-filter-label">蘑菇类型</span>
+            <div class="category-dropdown">
+                <select class="category-select" id="datasetCategorySelect" onchange="changeDatasetCategory(this.value)">
+                    {% for foo in all_type %}
+                        <option value="{{ foo }}" {% if foo == kind %}selected{% endif %}>
+                            {{ foo }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="ax-padding" style="background-color:white;max-width: 1400px;margin: 10px auto; box-sizing: border-box;">
+        <div class="ax-grid ax-space-xxl">
+            <ul class="ax-grid-inner">
+                {% for foo in newlist %}
+                    <li class="ax-grid-block ax-col-11" style="">
+                        <div class="ax-card-block">
+                            <div class="ax-img" style="height: 400px">
+                                <a href="###" class="ax-figure"
+                                   style="background-image:url(/IMG/{{ foo.img }});"></a>
+                            </div>
+
+
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <!--分页-->
+    <div style="margin: 10px auto;width: 500px" id="laypage"/>
+
+{% endblock %}
+
+{% block js %}
+    <script src="/static/js/current.js"></script>
+    <script src="/static/layui/lay/modules/layer.js"></script>
+    <script>
+        $(function () {
+            new SelectTag({
+                child: ".default", //所有默认
+                over: 'on', //当前选中
+                all: ".all" // 默认全部
+            });
+        })
+
+
+    </script>
+    <script>
+        // 数据集类别下拉菜单切换
+        function changeDatasetCategory(category) {
+            if (category) {
+                window.location.href = "{% url 'datasets_list' %}?kind=" + category;
+            }
+        }
+    </script>
+    <!--  分页 -->
+    <script>
+        layui.use(['laypage'], function () {
+            var laypage = layui.laypage;
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'laypage' //注意，这里的 test1 是 ID，不用加 # 号
+                , count: {{ total | safe }} //数据总数，从服务端得到
+                , curr: {{ pagenum | safe }}
+                , limit: {{ pageSize |safe }}
+                , jump: function (obj, first) {
+                    //obj包含了当前分页的所有参数，比如：
+                    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                    console.log(obj.limit); //得到每页显示的条数
+                    //首次不执行
+                    if (!first) {
+                        //do something
+                        location.href = "{% url 'datasets_list' %}" + '?pagenum=' + obj.curr + '&kind=' + '{{ kind }}'
+                    }
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

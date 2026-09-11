@@ -1,0 +1,10 @@
+django==2.2.14
+django-simpleui>=2022,<2026
+pillow==9.2.0
+numpy==1.21.6
+torch==1.13.1
+torchvision==0.14.1
+tqdm==4.65.0
+joblib==1.1.0
+jieba==0.42.1
+pymysql>=1.0.0

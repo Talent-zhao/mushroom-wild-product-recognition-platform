@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    商品情
+{% endblock %}
+{% block content %}
+    <link href="{% static 'css/news.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/ax.css">
+    <link rel="stylesheet" href="/static/css/ax-response.css">
+    <style>
+        p {
+            margin: 15px auto !important;
+            font-size: 16px;
+            text-align: left;
+            text-indent: 2em;
+            line-height: 25px;
+            font-family: 微软雅黑;
+            font-size: medium;
+        }
+        .comment-area .layui-card {
+            overflow: visible;
+        }
+        .comment-area .layui-card-header {
+            font-size: 16px;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(0,0,0,.06);
+        }
+        .comment-area .layui-card-body {
+            padding: 24px 20px;
+            background: #fff;
+            min-height: 120px;
+        }
+    </style>
+
+    <!-- 主体内容 -->
+    <div class="container ax-article" style="max-width: 1200px;">
+        <h1>博客详情页</h1>
+        <div class="model-details-product-title">
+            {{ info.title }}
+            <div class="model-foot">作者：{{ info.user.name }} &nbsp;&nbsp;
+                发布时间：{{ info.date|date:"Y-m-d" }} &nbsp;&nbsp;
+                浏览次数：{{ info.view|default:0 }}</div>
+        </div>
+        <div class="model-details">
+            {{ info.content | safe }}
+        </div>
+        <div class="comment-area" style="margin-top: 24px;">
+            <div class="layui-card" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);">
+                <div class="layui-card-header" style="background-color:{{ global_bg_color|default:'#1e9fff' }};color: white;">评论列表</div>
+                <div class="layui-card-body" style="padding: 20px;">
+                    {% include 'comment_list-blog.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+<script>
+$(function () {
+    var itemId = "{{ id_|safe }}";
+    $(document).on("click", "#comment", function () {
+        var content = $('#content').val().trim();
+        var $msg = $('#comment-msg');
+        $msg.text('');
+        if (!content) {
+            $msg.text('评论内容不能为空');
+            return;
+        }
+        $.ajax({
+            url: '{% url "commentAjaxblog" %}',
+            type: 'POST',
+            data: { content: content, item_id: itemId },
+            dataType: 'json',
+            success: function (res) {
+                if (res && res.ok) {
+                    location.reload();
+                } else {
+                    $msg.text(res && res.msg ? res.msg : '评论失败');
+                }
+            },
+            error: function () {
+                $msg.text('网络错误，请重试');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

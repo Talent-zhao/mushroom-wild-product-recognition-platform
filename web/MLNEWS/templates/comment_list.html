@@ -1,0 +1,67 @@
+<style>
+    .goods-comment-section { margin: 0; padding: 0; }
+    .goods-comment-section .commentbox { margin-bottom: 20px; }
+    .goods-comment-section .commentbox-label { display: block; font-size: 14px; color: #333; margin-bottom: 8px; font-weight: 600; }
+    .goods-comment-section .comment-input-wrap {
+        background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 12px; margin-bottom: 10px;
+    }
+    .goods-comment-section .mytextarea {
+        width: 100%; min-height: 90px; padding: 10px; box-sizing: border-box; border: none; background: transparent;
+        font-size: 14px; resize: vertical; display: block;
+    }
+    .goods-comment-section .btn-submit-comment { margin-top: 4px; }
+    .goods-comment-section #comment-msg { margin-top: 8px; color: #d9534f; font-size: 13px; min-height: 18px; }
+    .goods-comment-section .comment-login-tip {
+        background: #f8f9fa; border: 1px dashed #dee2e6; border-radius: 8px; padding: 16px; text-align: center; color: #666;
+    }
+    .goods-comment-section .comment-login-tip a { color: #1e9fff; }
+    .goods-comment-section .comment-list { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; clear: both; }
+    .goods-comment-section .comment-list-title { color: #555; margin: 0 0 14px 0; font-size: 14px; font-weight: 600; }
+    .goods-comment-section .comment-info {
+        display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px; padding-bottom: 18px;
+        border-bottom: 1px solid #eee;
+    }
+    .goods-comment-section .comment-info:last-child { border-bottom: none; margin-bottom: 0; }
+    .goods-comment-section .comment-info header { flex-shrink: 0; width: 44px; }
+    .goods-comment-section .comment-info header img { width: 44px; height: 44px; object-fit: cover; border-radius: 50%; }
+    .goods-comment-section .comment-info .comment-right { flex: 1; min-width: 0; }
+    .goods-comment-section .comment-info .comment-right h3 { margin: 0 0 6px 0; font-size: 15px; }
+    .goods-comment-section .comment-content-header {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 6px; line-height: 1.5;
+    }
+    .goods-comment-section .comment-meta { color: #999; font-size: 12px; }
+    .goods-comment-section .comment-right .content { margin: 0; font-size: 14px; line-height: 1.6; word-break: break-word; }
+    .goods-comment-section .comment-empty { color: #999; font-size: 14px; padding: 24px 0; text-align: center; }
+</style>
+
+<div class="goods-comment-section">
+    <div class="commentbox">
+        <label class="commentbox-label">写评论</label>
+        {% if uid != -1 %}
+            <div class="comment-input-wrap">
+                <textarea class="mytextarea" id="content" placeholder="来说几句吧......" rows="4"></textarea>
+            </div>
+            <button type="button" class="layui-btn layui-btn-normal btn-submit-comment" id="comment">提交评论</button>
+            <p id="comment-msg"></p>
+        {% else %}
+            <p class="comment-login-tip">登录后可写评论，<a href="/login/?next={{ request.get_full_path|urlencode }}">去登录</a></p>
+        {% endif %}
+    </div>
+    <div class="comment-list">
+        <p class="comment-list-title">全部评论</p>
+        {% for foo in comment_list %}
+            <div class="comment-info">
+                <header><img src="/static/Bull-Thistle.jpg" alt="头像"></header>
+                <div class="comment-right">
+                    <h3>{{ foo.user.name }}</h3>
+                    <div class="comment-content-header">
+                        <span class="comment-meta">{{ foo.date }}</span>
+                    </div>
+                    <p class="content">{{ foo.content }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p class="comment-empty">暂无评论，快来抢沙发～</p>
+        {% endfor %}
+    </div>
+</div>

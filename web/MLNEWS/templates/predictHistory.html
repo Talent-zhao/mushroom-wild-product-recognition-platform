@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}  {{ block.super }}   {% endblock %}
+
+{% block css %}
+    <style>
+        .table tr th {
+            text-align: center;
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="layui-container" style="margin-top: 10px;width: 1200px;margin: 10px auto;">
+        <div class="layui-card" style="box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)">
+            <div class="layui-card-header" style="background-color:{{ global_bg_color }};color: white">识别记录</div>
+            <div class="layui-card-body">
+                <table class="table layui-table" style="width: 1200px;margin: 10px auto;text-align: center">
+                    <tr class=" " style="text-align: center">
+                        <th>时间</th>
+                        <th>图片</th>
+                        <th>类别</th>
+                        <th>识别类型</th>
+                    </tr>
+                    {% for item in data_list %}
+                        <tr>
+                            <td>{{ item.time|date:"Y-m-d H:i:s" }}</td>
+                            <td>
+                                {% if item.img_url %}
+                                <img src="{{ item.img_url }}" alt="" style="max-width:120px;max-height:80px;object-fit:contain;">
+                                {% else %}
+                                —
+                                {% endif %}
+                            </td>
+                            <td>{{ item.kind_label }}</td>
+                            <td>{{ item.record_type }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4" style="text-align: center">暂无识别记录，请先进行<a href="{% url 'upload1' %}">蘑菇识别</a>或<a href="{% url 'upload2' %}">山货识别</a></td></tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/modern-style.css">
+
+
+    <style>
+        .layui-nav {
+            margin: 0 auto;
+            text-align: center;
+            overflow: visible;
+        }
+
+        .layui-nav-item {
+            position: relative;
+        }
+
+        /* 遮罩层 */
+        .modal {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: block;
+            z-index: 1000;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            width: 200px;
+            height: 200px;
+            top: calc(50% - 100px);
+            left: calc(50% - 100px);
+            z-index: 1001;
+            border-radius: 12px;
+            position: fixed;
+        }
+
+        .layui-nav .layui-nav-item dl {
+            margin: 0;
+            padding: 0;
+        }
+
+        .layui-nav .layui-nav-item dl a {
+            height: auto;
+            font-size: 14px;
+            line-height: 1.5;
+            padding: 10px 20px;
+            letter-spacing: 0.01em;
+        }
+
+
+    </style>
+    {% block css %}{% endblock %}
+</head>
+<body>
+
+<!-- 导航栏 -->
+<ul class="layui-nav" lay-filter="">
+    <li class="layui-nav-item"><a href="{% url 'datasets_list' %}">毒蘑菇数据集</a></li>
+    <li class="layui-nav-item"><a href="{% url 'upload1' %}">毒蘑菇识别</a></li>
+    <li class="layui-nav-item"><a href="{% url 'predictHistory' %}">识别记录</a></li>
+    <li class="layui-nav-item"><a href="{% url 'index' %}">商品列表</a></li>
+    <li class="layui-nav-item"><a href="{% url 'upload2' %}">山货识别</a></li>
+    <li class="layui-nav-item"><a href="{% url 'goods_add' %}">发布商品</a></li>
+    <li class="layui-nav-item"><a href="{% url 'myorder' %}">我的订单</a></li>
+    <li class="layui-nav-item"><a href="{% url 'blog_list' %}">论坛列表</a></li>
+    <li class="layui-nav-item"><a href="{% url 'blog_add' %}">发布帖子</a></li>
+
+    <li class="layui-nav-item" style="float: right;">
+        {% if uid == -1 %}
+            <a href="javascript:;">登录/注册</a>
+            <dl class="layui-nav-child">
+                <dd><a href="/login/">登录</a></dd>
+                <dd><a href="/register/">注册</a></dd>
+            </dl>
+        {% else %}
+            <a href="javascript:;">{{ username }}</a>
+            <dl class="layui-nav-child">
+                <dd><a href="{% url 'profile' %}">修改资料</a></dd>
+                <dd><a href="{% url 'logout' %}">退出登录</a></dd>
+            </dl>
+        {% endif %}
+    </li>
+</ul>
+<!-- 遮罩层 -->
+<div class="modal hidden"></div>
+<div class="modal loading hidden">
+    <img src="/static/loading.gif" alt="" style="width: 100%;height: 100%">
+</div>
+
+
+{% block content %}{% endblock %}
+<!--  -->
+    <script src="/static/jquery-3.5.1.js"></script>
+    <script src="/static/layui/layui.js"></script>
+<script>
+    // 导航下拉依赖 element 模块，必须加载后才能点击展开
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+    // 导航栏当前页高亮
+    var navlis = $('.layui-nav li');
+    for (var i = 0; i < navlis.length; i++) {
+        var as = $(navlis[i]).find('a');
+        var flag = false;
+        for (var j = 0; j < as.length; j++) {
+            if ($(as[j]).attr('href') == "{{ request.path }}") {
+                $(navlis[i]).addClass('layui-this');
+                flag = true;
+                break;
+            }
+        }
+        if (flag === false) {
+            $(navlis[i]).removeClass('layui-this');
+        }
+    }
+</script>
+{% block js %}{% endblock %}
+</body>
+</html>
